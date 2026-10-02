@@ -34,3 +34,7 @@ The waitlist form posts to Formspree — create a free form at
 - 128bitgold — budget (planned)
 - 128bitlife — the hub: your whole life, one character sheet (planned)
 - 128bitmap — benched for being naughty
+
+## The app
+
+The Expo app lives in [`app/`](app/) — Quests, Checklist, Book, and Passport tabs, the shared 128bit event schema (`src/events.ts`), and affiliate link builders (`src/affiliates.ts`). Run it with `cd app && npx expo install && npx expo start`.
