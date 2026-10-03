@@ -49,7 +49,7 @@ filled in, all booking buttons degrade to plain deep links — nothing breaks.
 
 1. Travelpayouts (travelpayouts.com) → join Aviasales, Hotellook, Viator, GetYourGuide
 2. Booking.com via Awin → fill `awinPublisherId` + `bookingAwinMid`
-3. Airalo via Impact → fill `airaloRef`
+3. Airalo → ✅ live via Travelpayouts (`airaloLink`)
 4. Undercover Tourist (Disney tickets)
 5. Expedia Travel Redirect API (while Rapid is paused)
 6. Duffel (duffel.com) — real flight booking API, when ready

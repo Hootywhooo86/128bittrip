@@ -17,8 +17,8 @@ export const AFFILIATES = {
   /** Awin publisher id + Booking.com advertiser id (MID). */
   awinPublisherId: '',
   bookingAwinMid: '',
-  /** Airalo referral / Impact tracking id. */
-  airaloRef: '',
+  /** Airalo partner link (Travelpayouts short link). Tracks eSIM sales. */
+  airaloLink: 'https://airalo.tpk.mx/7vGaig1n',
   /** GetYourGuide partner id. */
   getYourGuidePartnerId: '',
 };
@@ -76,10 +76,7 @@ export function carSearchLink(destination: string): string {
 
 /** eSIM purchase link (Airalo). */
 export function esimLink(): string {
-  if (AFFILIATES.airaloRef) {
-    return `https://www.airalo.com/?ref=${encodeURIComponent(AFFILIATES.airaloRef)}`;
-  }
-  return 'https://www.airalo.com/';
+  return AFFILIATES.airaloLink || 'https://www.airalo.com/';
 }
 
 /** Tours, tickets & activities search (GetYourGuide). */
