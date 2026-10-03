@@ -7,6 +7,7 @@ import { Colors, Spacing } from '@/constants/theme';
 import { DESTINATIONS } from '@/data/destinations';
 import { useGame } from '@/game/store';
 import { GOLD_AVAILABLE } from '@/services/gold';
+import { localCurrency } from '@/services/locale';
 import { CURRENCIES } from '@/services/prices';
 
 const STAMP_COLORS = [Colors.teal, Colors.orange, Colors.pink];
@@ -102,8 +103,18 @@ export default function PassportScreen() {
           CURRENCY (NEW TRIPS)
         </PixelText>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two }}>
+          <Chip
+            label={`AUTO (${localCurrency()})`}
+            active={state.settings.currencyAuto}
+            onPress={() => updateSettings({ currencyAuto: true, currency: localCurrency() })}
+          />
           {CURRENCIES.map((c) => (
-            <Chip key={c} label={c} active={state.settings.currency === c} onPress={() => updateSettings({ currency: c })} />
+            <Chip
+              key={c}
+              label={c}
+              active={!state.settings.currencyAuto && state.settings.currency === c}
+              onPress={() => updateSettings({ currencyAuto: false, currency: c })}
+            />
           ))}
         </View>
         <PixelText size={8} tone="muted">

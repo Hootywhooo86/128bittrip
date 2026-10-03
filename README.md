@@ -59,11 +59,24 @@ entered by hand, or synced from 128bitgold once it ships. Price drops are
 critical hits, price rises heal the boss. 25/50/75% milestones, defeating
 the boss, booking each category, and checking in on arrival all pay XP.
 
+**Server + secrets:** Trip AI (Claude) and live flight fares run as Expo
+Router API routes in `app/src/app/api/`, so API keys never ship inside the
+app. Copy `app/.env.example` to `app/.env.local` and fill in
+`ANTHROPIC_API_KEY` and `TRAVELPAYOUTS_TOKEN`; `npx expo start` serves the
+routes in development. For production, deploy the server with EAS Hosting
+(`npx eas-cli@latest deploy`) and set the same two variables there. Without
+them the app still works: Trip AI falls back to its on-device planner and
+prices stay estimates.
+
+**Currency** follows the phone's region by default (CAD in Canada, USD in
+the US…); travelers can pin a currency in Passport → Settings.
+
 **Where things live (`app/src/`):**
 
 - `game/` — store (state, XP awards, persistence), quests & bosses, levels, shared 128bit event schema
 - `services/affiliates.ts` — partner link builders. Paste affiliate IDs here as programs approve you.
-- `services/prices.ts` — trip cost estimates; live flight fares when `EXPO_PUBLIC_TRAVELPAYOUTS_TOKEN` is set
-- `services/trip-ai.ts` — the budget → trip planner (on-device v1)
+- `services/prices.ts` — trip cost estimates; live flight fares via `/api/fare`
+- `services/trip-ai.ts` — budget → trip plans: Claude via `/api/trip-ai`, on-device planner as fallback
+- `app/api/` — server routes (`trip-ai+api.ts`, `fare+api.ts`) holding the API keys
 - `services/gold.ts` — 128bitgold savings sync (stubbed until 128bitgold exists)
 - `data/destinations.ts` — destination catalog, bosses, experiences and price baselines

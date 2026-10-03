@@ -10,7 +10,7 @@ import { bossFor, CATEGORY_META, daysUntil, questsFor, tripCategories } from '@/
 import { useGame, useTrip } from '@/game/store';
 import { linkFor } from '@/services/affiliates';
 import { GOLD_AVAILABLE } from '@/services/gold';
-import { Category, formatMoney, LIVE_PRICES_ENABLED } from '@/services/prices';
+import { Category, formatMoney } from '@/services/prices';
 
 export default function TripScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -146,7 +146,6 @@ export default function TripScreen() {
         <CostTable cost={trip.cost} currency={trip.currency} />
         <Body size={12} tone="muted">
           Updated {new Date(lastPrice.at).toLocaleString()}
-          {LIVE_PRICES_ENABLED ? '' : ' · live fares switch on once the flight partner is connected'}
         </Body>
         <PixelButton label={refreshing ? 'SCANNING…' : 'REFRESH PRICES'} small variant="ghost" disabled={refreshing} onPress={refresh} />
       </Panel>

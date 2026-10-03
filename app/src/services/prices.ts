@@ -2,20 +2,27 @@
  * Trip cost estimates + live flight prices.
  *
  * Estimates come from the destination catalog and a simple flight-fare
- * table, converted into the trip's currency. When a Travelpayouts API
- * token is configured (EXPO_PUBLIC_TRAVELPAYOUTS_TOKEN), the flight line
- * is replaced with the cheapest live fare for the trip's dates.
- *
- * TODO(backend): move the live-price call behind the 128bit API so the
- * token isn't shipped in the app bundle, and refresh prices on a schedule.
+ * table, converted into the trip's currency. Live fares come from our own
+ * server route (src/app/api/fare+api.ts), which holds the Travelpayouts
+ * token — when it's configured, the flight line becomes the cheapest live
+ * fare for the trip's dates.
  */
 
 import { Destination, getDestination } from '@/data/destinations';
 
-export type Currency = 'CAD' | 'USD' | 'EUR' | 'GBP' | 'AUD';
+export type Currency = 'CAD' | 'USD' | 'EUR' | 'GBP' | 'AUD' | 'NZD' | 'MXN' | 'JPY';
 
 /** Rough planning rates from USD. Good enough for budgeting, not for checkout. */
-const FROM_USD: Record<Currency, number> = { USD: 1, CAD: 1.37, EUR: 0.92, GBP: 0.78, AUD: 1.5 };
+const FROM_USD: Record<Currency, number> = {
+  USD: 1,
+  CAD: 1.37,
+  EUR: 0.92,
+  GBP: 0.78,
+  AUD: 1.5,
+  NZD: 1.65,
+  MXN: 18.5,
+  JPY: 148,
+};
 
 export const CURRENCIES = Object.keys(FROM_USD) as Currency[];
 
@@ -29,8 +36,8 @@ export function toUsd(amount: number, currency: Currency): number {
 
 export function formatMoney(amount: number, currency: Currency): string {
   const rounded = Math.round(amount);
-  const symbol = currency === 'EUR' ? '€' : currency === 'GBP' ? '£' : '$';
-  const suffix = currency === 'EUR' || currency === 'GBP' ? '' : ` ${currency}`;
+  const symbol = currency === 'EUR' ? '€' : currency === 'GBP' ? '£' : currency === 'JPY' ? '¥' : '$';
+  const suffix = ['EUR', 'GBP', 'JPY'].includes(currency) ? '' : ` ${currency}`;
   return `${symbol}${rounded.toLocaleString('en-US')}${suffix}`;
 }
 
@@ -105,14 +112,10 @@ export function estimateTrip(spec: TripSpec, flightPerPersonUsd?: number): CostB
   return { flight, hotel, car, esim, experience, spending, total: flight + hotel + car + esim + experience + spending };
 }
 
-const TP_TOKEN = process.env.EXPO_PUBLIC_TRAVELPAYOUTS_TOKEN ?? '';
-
-export const LIVE_PRICES_ENABLED = TP_TOKEN.length > 0;
-
 /**
- * Cheapest live round-trip fare per person, in `currency`, for the month of
- * departDate (Travelpayouts / Aviasales Data API). Returns null when live
- * prices are off or nothing came back.
+ * Cheapest live round-trip fare per person, in `currency`, for the trip's
+ * month, via our server route. Returns null when live prices aren't set up
+ * on the server or nothing came back.
  */
 export async function fetchLiveFare(
   origin: string,
@@ -121,25 +124,18 @@ export async function fetchLiveFare(
   nights: number,
   currency: Currency,
 ): Promise<number | null> {
-  if (!LIVE_PRICES_ENABLED) return null;
-  const ret = new Date(`${departDate}T00:00:00Z`);
-  ret.setUTCDate(ret.getUTCDate() + nights);
   const params = new URLSearchParams({
     origin: origin.trim().toUpperCase(),
     destination: dest.iata,
-    departure_at: departDate.slice(0, 7),
-    return_at: ret.toISOString().slice(0, 7),
-    currency: currency.toLowerCase(),
-    sorting: 'price',
-    limit: '1',
-    token: TP_TOKEN,
+    departDate,
+    nights: String(nights),
+    currency,
   });
   try {
-    const res = await fetch(`https://api.travelpayouts.com/aviasales/v3/prices_for_dates?${params}`);
+    const res = await fetch(`/api/fare?${params}`);
     if (!res.ok) return null;
-    const json = (await res.json()) as { success?: boolean; data?: { price?: number }[] };
-    const price = json.data?.[0]?.price;
-    return json.success && typeof price === 'number' ? price : null;
+    const json = (await res.json()) as { price?: number | null };
+    return typeof json.price === 'number' ? json.price : null;
   } catch {
     return null;
   }

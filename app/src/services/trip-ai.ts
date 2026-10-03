@@ -1,16 +1,15 @@
 /**
  * Trip AI: "here's what I can spend" → ranked trip plans that fit.
  *
- * v1 runs on-device over the destination catalog: for every destination it
- * finds the longest stay that fits the budget, adds a car where it helps,
- * fills leftover budget with experiences, then ranks by vibe match and how
- * well the plan uses the budget.
- *
- * The async signature is deliberate — a server-side model can replace
- * `planTrips` later without touching the screen.
+ * Plans come from Claude via our server route (src/app/api/trip-ai+api.ts),
+ * which prices every plan with the shared estimator. If the server isn't
+ * reachable or configured, the on-device planner below takes over: for each
+ * destination it finds the longest stay that fits, adds a car where it
+ * helps, fills leftover budget with experiences, then ranks by vibe match
+ * and budget use.
  */
 
-import { Destination, DESTINATIONS, Vibe } from '@/data/destinations';
+import { Destination, DESTINATIONS, getDestination, Vibe } from '@/data/destinations';
 
 import { CostBreakdown, Currency, estimateTrip, TripSpec } from './prices';
 
@@ -22,6 +21,8 @@ export interface PlanRequest {
   /** Fixed trip length, or undefined to let the AI pick (3–7 nights). */
   nights?: number;
   vibes: Vibe[];
+  /** Free-text wishes for the AI, e.g. "warm in December, no long flights". */
+  notes?: string;
 }
 
 export interface TripPlan {
@@ -31,7 +32,14 @@ export interface TripPlan {
   leftover: number;
   vibeMatches: Vibe[];
   pitch: string;
+  highlights: string[];
   score: number;
+}
+
+export interface PlanResult {
+  plans: TripPlan[];
+  /** 'ai' = Claude via the server; 'local' = on-device fallback. */
+  source: 'ai' | 'local';
 }
 
 const NIGHT_OPTIONS = [7, 6, 5, 4, 3];
@@ -75,14 +83,41 @@ function planFor(dest: Destination, req: PlanRequest): TripPlan | null {
       ]
         .filter(Boolean)
         .join(' ');
-      return { dest, spec, cost, leftover: req.budget - cost.total, vibeMatches, pitch, score };
+      return { dest, spec, cost, leftover: req.budget - cost.total, vibeMatches, pitch, highlights: [], score };
     }
   }
   return null;
 }
 
-export async function planTrips(req: PlanRequest, limit = 3): Promise<TripPlan[]> {
-  if (!(req.budget > 0) || req.travelers < 1) return [];
+type ServerPlan = Omit<TripPlan, 'dest' | 'score'> & { destinationId: string };
+
+async function planWithAi(req: PlanRequest): Promise<TripPlan[] | null> {
+  try {
+    const res = await fetch('/api/trip-ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(req),
+    });
+    if (!res.ok) return null;
+    const json = (await res.json()) as { plans?: ServerPlan[] };
+    if (!json.plans) return null;
+    return json.plans.flatMap((p, i) => {
+      const dest = getDestination(p.destinationId);
+      return dest ? [{ ...p, dest, score: json.plans!.length - i }] : [];
+    });
+  } catch {
+    return null;
+  }
+}
+
+export async function planTrips(req: PlanRequest): Promise<PlanResult> {
+  if (!(req.budget > 0) || req.travelers < 1) return { plans: [], source: 'local' };
+  const ai = await planWithAi(req);
+  if (ai && ai.length > 0) return { plans: ai, source: 'ai' };
+  return { plans: planLocally(req), source: 'local' };
+}
+
+function planLocally(req: PlanRequest, limit = 3): TripPlan[] {
   return DESTINATIONS.filter((d) => d.iata !== req.origin.trim().toUpperCase())
     .map((d) => planFor(d, req))
     .filter((p): p is TripPlan => p !== null)

@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import { getDestination } from '@/data/destinations';
+import { localCurrency } from '@/services/locale';
 import {
   Category,
   CostBreakdown,
@@ -50,7 +51,9 @@ export interface Stamp {
 
 export interface Settings {
   homeAirport: string;
+  /** Currency for new trips. Follows the device region while currencyAuto is on. */
   currency: Currency;
+  currencyAuto: boolean;
   /** True once the traveler links 128bitgold (budget sync). */
   goldLinked: boolean;
 }
@@ -79,7 +82,7 @@ const INITIAL: GameState = {
   xp: 0,
   trips: [],
   stamps: [],
-  settings: { homeAirport: 'YEG', currency: 'CAD', goldLinked: false },
+  settings: { homeAirport: 'YEG', currency: localCurrency(), currencyAuto: true, goldLinked: false },
 };
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -131,7 +134,9 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         if (!raw) return;
         const saved = JSON.parse(raw) as GameState;
         if (saved.version === 1) {
-          const next = { ...INITIAL, ...saved, settings: { ...INITIAL.settings, ...saved.settings } };
+          const settings = { ...INITIAL.settings, ...saved.settings };
+          if (settings.currencyAuto) settings.currency = localCurrency();
+          const next = { ...INITIAL, ...saved, settings };
           stateRef.current = next;
           setState(next);
         }

@@ -8,7 +8,7 @@ import { Colors, Spacing } from '@/constants/theme';
 import { Vibe, VIBES } from '@/data/destinations';
 import { useGame } from '@/game/store';
 import { formatMoney } from '@/services/prices';
-import { cheapestTrip, planTrips, TripPlan } from '@/services/trip-ai';
+import { cheapestTrip, planTrips, PlanResult, TripPlan } from '@/services/trip-ai';
 
 export default function TripAiScreen() {
   const { state } = useGame();
@@ -18,16 +18,21 @@ export default function TripAiScreen() {
   const [travelers, setTravelers] = useState(2);
   const [nights, setNights] = useState(0);
   const [vibes, setVibes] = useState<Vibe[]>([]);
-  const [plans, setPlans] = useState<TripPlan[] | null>(null);
+  const [notes, setNotes] = useState('');
+  const [result, setResult] = useState<PlanResult | null>(null);
+  const [thinking, setThinking] = useState(false);
+  const plans = result?.plans;
   const [floor, setFloor] = useState<{ city: string; total: number } | null>(null);
 
   const toggleVibe = (v: Vibe) => setVibes((prev) => (prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v]));
 
   const build = async () => {
-    const req = { budget: Number(budget), currency, origin, travelers, nights: nights || undefined, vibes };
-    const result = await planTrips(req);
-    setPlans(result);
-    const cheapest = result.length === 0 ? cheapestTrip(req) : null;
+    const req = { budget: Number(budget), currency, origin, travelers, nights: nights || undefined, vibes, notes: notes.trim() || undefined };
+    setThinking(true);
+    const next = await planTrips(req);
+    setThinking(false);
+    setResult(next);
+    const cheapest = next.plans.length === 0 ? cheapestTrip(req) : null;
     setFloor(cheapest ? { city: cheapest.dest.city, total: cheapest.total } : null);
   };
 
@@ -74,8 +79,26 @@ export default function TripAiScreen() {
             <Chip key={v.id} label={`${v.emoji} ${v.label}`} active={vibes.includes(v.id)} onPress={() => toggleVibe(v.id)} />
           ))}
         </View>
-        <PixelButton label="BUILD MY TRIP ✦" onPress={build} disabled={!(Number(budget) > 0) || origin.length !== 3} />
+        <Field
+          label="ANYTHING ELSE? (OPTIONAL)"
+          value={notes}
+          onChangeText={setNotes}
+          placeholder="Warm in December, short flights, kid-friendly…"
+          maxLength={500}
+          multiline
+        />
+        <PixelButton
+          label={thinking ? 'TRIP AI IS THINKING…' : 'BUILD MY TRIP ✦'}
+          onPress={build}
+          disabled={thinking || !(Number(budget) > 0) || origin.length !== 3}
+        />
       </Panel>
+
+      {result && result.plans.length > 0 && (
+        <PixelText size={7} tone="muted">
+          {result.source === 'ai' ? '✦ PLANNED BY TRIP AI · PRICES ARE ESTIMATES' : 'QUICK PLANS (OFFLINE) · PRICES ARE ESTIMATES'}
+        </PixelText>
+      )}
 
       {plans && plans.length === 0 && (
         <Panel accent={Colors.pink}>
@@ -105,6 +128,11 @@ export default function TripAiScreen() {
             </View>
             <Body size={32}>{p.dest.boss.emoji}</Body>
           </Row>
+          {p.highlights.map((h) => (
+            <Body key={h} size={13}>
+              ⚔ {h}
+            </Body>
+          ))}
           <CostTable cost={p.cost} currency={currency} />
           <Body size={12} tone="teal">
             {formatMoney(p.leftover, currency)} left over
