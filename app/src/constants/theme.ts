@@ -1,55 +1,34 @@
 /**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
+ * 128bit Trips design tokens — same palette and type as the landing page
+ * (index.html :root) and the rest of the 128bit family. The app is dark-only.
  */
-
-import '@/global.css';
 
 import { Platform } from 'react-native';
 
 export const Colors = {
-  light: {
-    text: '#000000',
-    background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
-  },
-  dark: {
-    text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
-    textSecondary: '#B0B4BA',
-  },
+  bg: '#0b0b16',
+  panel: '#141428',
+  line: '#26264a',
+  teal: '#2dd4bf',
+  tealDark: '#149e8c',
+  orange: '#ff9f1c',
+  orangeDark: '#b86e0a',
+  pink: '#ff5d8f',
+  ink: '#f4f1ff',
+  muted: '#9a97b8',
+  /** Text on orange / teal buttons. */
+  onBright: '#201100',
 } as const;
 
-export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
+export type ColorName = keyof typeof Colors;
 
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
-  },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: 'var(--font-display)',
-    serif: 'var(--font-serif)',
-    rounded: 'var(--font-rounded)',
-    mono: 'var(--font-mono)',
-  },
-});
+/** Font family names registered by useFonts in src/app/_layout.tsx. */
+export const Fonts = {
+  pixel: 'PressStart2P_400Regular',
+  body: 'Inter_400Regular',
+  bodySemi: 'Inter_600SemiBold',
+  bodyBold: 'Inter_800ExtraBold',
+} as const;
 
 export const Spacing = {
   half: 2,
@@ -62,4 +41,4 @@ export const Spacing = {
 } as const;
 
 export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
-export const MaxContentWidth = 800;
+export const MaxContentWidth = 720;

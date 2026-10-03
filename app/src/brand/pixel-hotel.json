@@ -1,0 +1,29 @@
+{
+  "comment": "128bit Trips logo: a 16x16 pixel hotel. Single source of truth for the in-app <PixelHotel/> and scripts/gen-brand.py (app icons, splash, favicon).",
+  "palette": {
+    "T": "#2dd4bf",
+    "D": "#149e8c",
+    "O": "#ff9f1c",
+    "P": "#ff5d8f",
+    "W": "#f4f1ff",
+    "K": "#0b0b16"
+  },
+  "grid": [
+    "................",
+    ".....PPPPPP.....",
+    ".....PWPPWP.....",
+    ".....PWWWWP.....",
+    ".....PWPPWP.....",
+    ".....PPPPPP.....",
+    ".......DD.......",
+    ".DDDDDDDDDDDDDD.",
+    ".TTTTTTTTTTTTTT.",
+    ".TOOTKKTTOOTOOT.",
+    ".TTTTTTTTTTTTTT.",
+    ".TOOTOOTTKKTOOT.",
+    ".TTTTTTTTTTTTTT.",
+    ".TKKTTKKKKTTOOT.",
+    ".TTTTTKOOKTTTTT.",
+    "DDDDDDDDDDDDDDDD"
+  ]
+}
