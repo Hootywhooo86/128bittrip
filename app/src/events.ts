@@ -4,9 +4,13 @@
  * Every 128bit app emits these events. 128bitlife subscribes to the feed
  * to generate quests, XP, and suggestions ("log your dinner").
  *
- * Keep this file in sync across all 128bit apps. When the backend lands,
- * emitEvent POSTs to the 128bit event feed; until then it logs locally.
+ * Keep this file in sync across all 128bit apps. emitEvent sends each event to
+ * the 128bit family feed (src/family.ts) when signed in to a 128bit family
+ * account; the feed's schema is 128bittracker's docs/EVENTS.md (name → type,
+ * XP rides along in data).
  */
+
+import { queueFamilyEvent } from './family';
 
 export type EventName =
   | 'workout.logged'
@@ -28,7 +32,7 @@ export type Bit128App = 'fit' | 'play' | 'trip' | 'gold' | 'life' | 'fantasy';
 export interface Bit128Event {
   name: EventName;
   app: Bit128App;
-  /** 128bit account id — stubbed until auth lands. */
+  /** Local tag; the family feed knows the account from the sign-in. */
   userId: string;
   /** ISO-8601 timestamp, filled by emitEvent. */
   occurredAt: string;
@@ -62,8 +66,6 @@ export function emitEvent(
     xp: e.xp ?? XP[e.name] ?? 10,
     occurredAt: new Date().toISOString(),
   };
-  // TODO(128bitlife): POST to the 128bit event feed.
-  // Local log keeps the contract testable until then.
-  console.log('[128bit:event]', JSON.stringify(full));
+  queueFamilyEvent(full.name, { ...full.data, xp: full.xp }, Date.parse(full.occurredAt));
   return full;
 }

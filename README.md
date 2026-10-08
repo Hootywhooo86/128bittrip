@@ -25,7 +25,7 @@ The waitlist form posts to Formspree — create a free form at
 1. Landing page + affiliate signups (Travelpayouts, Booking.com, Airalo)
 2. Trip MVP: countdown, checklist, booking links — dogfooded at Disneyland Oct 2026
 3. Real booking APIs (Duffel for flights, hotel APIs)
-4. Shared 128bit account + event schema so 128bitlife can collect trip events
+4. ~~Shared 128bit account + event schema so 128bitlife can collect trip events~~ done: see below
 
 ## The family
 
@@ -38,3 +38,15 @@ The waitlist form posts to Formspree — create a free form at
 ## The app
 
 The Expo app lives in [`app/`](app/) — Quests, Checklist, Book, and Passport tabs, the shared 128bit event schema (`src/events.ts`), and affiliate link builders (`src/affiliates.ts`). Run it with `cd app && npx expo install && npx expo start`.
+
+## 128bit family account
+
+Passport → **128bit family account**: Continue with Google, Continue with Apple, or email, the
+same account as 128bitPlay, 128bitfit and 128bit Tracker. Signed in, every `emitEvent` in
+[`app/src/events.ts`](app/src/events.ts) (quests, packing, bookings, check-ins) goes to the family
+feed via [`app/src/family.ts`](app/src/family.ts), so it shows on Tracker's timeline and reaches
+128bitlife. Events wait in an outbox when offline; nothing is collected while signed out.
+Delete account is in the same panel. Feed schema: 128bittracker's `docs/EVENTS.md`.
+
+Google and Apple need `bit128trip://auth-callback` in Supabase → Authentication → URL
+Configuration → Redirect URLs.

@@ -1,5 +1,7 @@
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
+import { FamilyAccount } from '@/components/family-account';
+
 const COLORS = { bg: '#0b0b16', panel: '#141428', teal: '#2dd4bf', orange: '#ff9f1c', pink: '#ff5d8f', ink: '#f4f1ff', muted: '#9a97b8' };
 
 const STAMPS = [
@@ -16,7 +18,7 @@ export default function PassportScreen() {
   return (
     <View style={s.wrap}>
       <View style={s.hero}>
-        <Text style={s.eyebrow}>128BITLIFE SYNCED</Text>
+        <Text style={s.eyebrow}>128BIT FAMILY</Text>
         <Text style={s.title}>Passport</Text>
         <Text style={s.xp}>{got}/{STAMPS.length} stamps · Level: {LEVELS[Math.min(got, LEVELS.length - 1)]}</Text>
       </View>
@@ -24,6 +26,7 @@ export default function PassportScreen() {
         data={STAMPS}
         keyExtractor={i => i.id}
         numColumns={2}
+        ListHeaderComponent={<FamilyAccount />}
         contentContainerStyle={s.list}
         columnWrapperStyle={s.row}
         renderItem={({ item }) => (
@@ -34,7 +37,7 @@ export default function PassportScreen() {
           </View>
         )}
       />
-      <Text style={s.note}>Check in on a trip to earn stamps. XP flows to 128bitlife.</Text>
+      <Text style={s.note}>Check in on a trip to earn stamps. Signed in, XP flows to 128bitlife.</Text>
     </View>
   );
 }
