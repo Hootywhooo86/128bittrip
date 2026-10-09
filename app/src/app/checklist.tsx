@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { FlatList, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { esimLink } from '../affiliates';
 import { emitEvent } from '../events';
+import { base, colors, fonts } from '../theme';
 
-const COLORS = { bg: '#0b0b16', panel: '#141428', teal: '#2dd4bf', orange: '#ff9f1c', ink: '#f4f1ff', muted: '#9a97b8' };
 
 interface Item { id: string; label: string; action?: { label: string; url: () => string; event: 'esim.purchased' }; }
 
@@ -70,22 +70,22 @@ export default function ChecklistScreen() {
 }
 
 const s = StyleSheet.create({
-  wrap: { flex: 1, backgroundColor: COLORS.bg },
-  hero: { padding: 24, paddingBottom: 8 },
-  eyebrow: { color: COLORS.teal, fontSize: 11, letterSpacing: 2, marginBottom: 8, fontWeight: '700' },
-  title: { color: COLORS.ink, fontSize: 28, fontWeight: '800' },
-  xp: { color: COLORS.orange, fontSize: 14, marginTop: 6, fontWeight: '600' },
-  bar: { height: 8, backgroundColor: '#26264a', marginTop: 12 },
-  fill: { height: 8, backgroundColor: COLORS.teal },
+  wrap: base.wrap,
+  hero: base.hero,
+  eyebrow: base.eyebrow,
+  title: base.title,
+  xp: base.xp,
+  bar: { height: 8, backgroundColor: colors.track, marginTop: 12 },
+  fill: { height: 8, backgroundColor: colors.accent },
   list: { padding: 16, gap: 12 },
-  card: { backgroundColor: COLORS.panel, borderWidth: 2, borderColor: '#26264a', padding: 14 },
-  cardDone: { borderColor: COLORS.teal, opacity: 0.75 },
+  card: base.card,
+  cardDone: { borderColor: colors.borderBright, opacity: 0.6 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  check: { width: 26, height: 26, borderWidth: 2, borderColor: COLORS.muted, alignItems: 'center', justifyContent: 'center' },
-  checkDone: { borderColor: COLORS.teal, backgroundColor: COLORS.teal },
-  checkMark: { color: '#0b0b16', fontWeight: '800' },
-  label: { color: COLORS.ink, fontSize: 15, fontWeight: '600', flex: 1 },
-  strike: { textDecorationLine: 'line-through', color: COLORS.muted },
-  action: { marginTop: 12, backgroundColor: COLORS.orange, padding: 12, alignItems: 'center' },
-  actionText: { color: '#201100', fontWeight: '800', fontSize: 13, letterSpacing: 1 },
+  check: { width: 26, height: 26, borderWidth: 2, borderColor: colors.textMuted, alignItems: 'center', justifyContent: 'center' },
+  checkDone: { borderColor: colors.accent, backgroundColor: colors.accent },
+  checkMark: { color: colors.onAccent, fontWeight: '800' },
+  label: { color: colors.text, fontSize: 15, fontWeight: '600', flex: 1 },
+  strike: { textDecorationLine: 'line-through', color: colors.textMuted },
+  action: { marginTop: 12, backgroundColor: colors.accent, padding: 12, alignItems: 'center' },
+  actionText: { fontFamily: fonts.pixel, color: colors.onAccent, fontSize: 10 },
 });

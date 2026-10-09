@@ -37,4 +37,4 @@ The waitlist form posts to Formspree — create a free form at
 
 ## The app
 
-The Expo app lives in [`app/`](app/) — Quests, Checklist, Book, and Passport tabs, the shared 128bit event schema (`src/events.ts`), and affiliate link builders (`src/affiliates.ts`). Run it with `cd app && npx expo install && npx expo start`.
+The Expo app lives in [`app/`](app/) — Quests, Checklist, Book, and Passport tabs, the 128bit family kit (`src/family/`: the shared look, PressStart2P, accent rules, sibling app links and the event schema), and affiliate link builders (`src/affiliates.ts`). Run it with `cd app && npx expo install && npx expo start`.

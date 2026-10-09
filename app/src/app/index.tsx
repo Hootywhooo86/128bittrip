@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { emitEvent } from '../events';
+import { base, colors, fonts } from '../theme';
 
-const COLORS = { bg: '#0b0b16', panel: '#141428', teal: '#2dd4bf', orange: '#ff9f1c', ink: '#f4f1ff', muted: '#9a97b8' };
 
 interface Quest { id: string; title: string; detail: string; xp: number; done: boolean; }
 
@@ -56,20 +56,20 @@ export default function QuestsScreen() {
 }
 
 const s = StyleSheet.create({
-  wrap: { flex: 1, backgroundColor: COLORS.bg },
-  hero: { padding: 24, paddingBottom: 8 },
-  eyebrow: { color: COLORS.teal, fontSize: 11, letterSpacing: 2, marginBottom: 8, fontWeight: '700' },
-  title: { color: COLORS.ink, fontSize: 28, fontWeight: '800' },
-  xp: { color: COLORS.orange, fontSize: 14, marginTop: 6, fontWeight: '600' },
+  wrap: base.wrap,
+  hero: base.hero,
+  eyebrow: base.eyebrow,
+  title: base.title,
+  xp: base.xp,
   list: { padding: 16, gap: 12 },
-  card: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.panel, borderWidth: 2, borderColor: '#26264a', padding: 14, gap: 12 },
-  cardDone: { borderColor: COLORS.teal, opacity: 0.75 },
-  check: { width: 26, height: 26, borderWidth: 2, borderColor: COLORS.muted, alignItems: 'center', justifyContent: 'center' },
-  checkDone: { borderColor: COLORS.teal, backgroundColor: COLORS.teal },
-  checkMark: { color: '#0b0b16', fontWeight: '800' },
+  card: { ...base.card, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  cardDone: { borderColor: colors.borderBright, opacity: 0.6 },
+  check: { width: 26, height: 26, borderWidth: 2, borderColor: colors.textMuted, alignItems: 'center', justifyContent: 'center' },
+  checkDone: { borderColor: colors.accent, backgroundColor: colors.accent },
+  checkMark: { color: colors.onAccent, fontWeight: '800' },
   cardBody: { flex: 1 },
-  cardTitle: { color: COLORS.ink, fontSize: 15, fontWeight: '700' },
-  strike: { textDecorationLine: 'line-through', color: COLORS.muted },
-  cardDetail: { color: COLORS.muted, fontSize: 12, marginTop: 2 },
-  cardXp: { color: COLORS.orange, fontWeight: '800', fontSize: 13 },
+  cardTitle: { color: colors.text, fontSize: 15, fontWeight: '700' },
+  strike: { textDecorationLine: 'line-through', color: colors.textMuted },
+  cardDetail: { color: colors.textMuted, fontSize: 12, marginTop: 2 },
+  cardXp: { fontFamily: fonts.pixel, color: colors.accent, fontSize: 9 },
 });

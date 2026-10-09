@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Linking, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { bookingComLink, flightSearchLink, hotelSearchLink } from '../affiliates';
 import { emitEvent } from '../events';
+import { base, colors, fonts } from '../theme';
 
-const COLORS = { bg: '#0b0b16', panel: '#141428', teal: '#2dd4bf', orange: '#ff9f1c', ink: '#f4f1ff', muted: '#9a97b8' };
 
 export default function BookScreen() {
   const [dest, setDest] = useState('Anaheim');
@@ -28,17 +28,17 @@ export default function BookScreen() {
           value={dest}
           onChangeText={setDest}
           placeholder="Anaheim"
-          placeholderTextColor={COLORS.muted}
+          placeholderTextColor={colors.textMuted}
         />
 
         <Pressable style={s.btn} onPress={() => open(hotelSearchLink(dest), 'hotel')}>
-          <Text style={s.btnText}>🏨 FIND HOTELS →</Text>
+          <Text style={s.btnText}>FIND HOTELS →</Text>
         </Pressable>
         <Pressable style={[s.btn, s.btnAlt]} onPress={() => open(bookingComLink(dest), 'bookingcom')}>
-          <Text style={s.btnText}>🛏️ BOOKING.COM →</Text>
+          <Text style={[s.btnText, s.btnAltText]}>BOOKING.COM →</Text>
         </Pressable>
         <Pressable style={s.btn} onPress={() => open(flightSearchLink('YEG', 'SNA'), 'flight')}>
-          <Text style={s.btnText}>✈️ FIND FLIGHTS (YEG → SNA) →</Text>
+          <Text style={s.btnText}>FIND FLIGHTS YEG → SNA</Text>
         </Pressable>
 
         <Text style={s.note}>
@@ -50,16 +50,17 @@ export default function BookScreen() {
 }
 
 const s = StyleSheet.create({
-  wrap: { flex: 1, backgroundColor: COLORS.bg },
-  hero: { padding: 24, paddingBottom: 8 },
-  eyebrow: { color: COLORS.teal, fontSize: 11, letterSpacing: 2, marginBottom: 8, fontWeight: '700' },
-  title: { color: COLORS.ink, fontSize: 28, fontWeight: '800' },
-  sub: { color: COLORS.muted, fontSize: 14, marginTop: 8, lineHeight: 20 },
+  wrap: base.wrap,
+  hero: base.hero,
+  eyebrow: base.eyebrow,
+  title: base.title,
+  sub: { color: colors.textMuted, fontSize: 14, marginTop: 8, lineHeight: 20 },
   body: { padding: 16, gap: 12 },
-  label: { color: COLORS.muted, fontSize: 11, letterSpacing: 2, fontWeight: '700' },
-  input: { backgroundColor: COLORS.panel, borderWidth: 2, borderColor: COLORS.teal, color: COLORS.ink, padding: 14, fontSize: 16 },
-  btn: { backgroundColor: COLORS.orange, padding: 16, alignItems: 'center', marginTop: 4 },
-  btnAlt: { backgroundColor: COLORS.teal },
-  btnText: { color: '#101018', fontWeight: '800', fontSize: 14, letterSpacing: 1 },
-  note: { color: COLORS.muted, fontSize: 12, marginTop: 16, lineHeight: 18, textAlign: 'center' },
+  label: { fontFamily: fonts.pixel, color: colors.textMuted, fontSize: 8, letterSpacing: 1 },
+  input: { backgroundColor: colors.surface, borderWidth: 2, borderColor: colors.borderBright, color: colors.text, padding: 14, fontSize: 16 },
+  btn: { backgroundColor: colors.accent, padding: 16, alignItems: 'center', marginTop: 4 },
+  btnAlt: { backgroundColor: colors.surface, borderWidth: 2, borderColor: colors.accent },
+  btnText: { fontFamily: fonts.pixel, color: colors.onAccent, fontSize: 10 },
+  btnAltText: { color: colors.accent },
+  note: { color: colors.textMuted, fontSize: 12, marginTop: 16, lineHeight: 18, textAlign: 'center' },
 });
